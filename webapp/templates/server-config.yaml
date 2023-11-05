@@ -1,0 +1,53 @@
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-server-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.server.replicaCount }}
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: {{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
+          ports:
+            - containerPort: 5000
+          env: # Environment variables
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-redis-clusterip
+            - name: REDIS_PORT
+              value: '6379'
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: {{ .Release.Name }}-postgres-clusterip
+            - name: PGDATABASE
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: PGPORT
+              value: '5432'
+
+---
+
+# Service configuration
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-server-clusterip
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.type }} 
+  selector:
+    component: server
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP

@@ -1,0 +1,23 @@
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      component: worker
+  template:
+    metadata:
+      labels:
+        component: worker
+    spec:
+      containers:
+        - name: worker
+          image: enzofali/multi-worker:v1
+          env:
+            - name: REDIS_HOST
+              value: redis-clusterip 
+            - name: REDIS_PORT
+              value: '6379'
