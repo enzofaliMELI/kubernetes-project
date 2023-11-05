@@ -1,7 +1,7 @@
 # Kubernetes Project
 
 ## Introduction
-This repository serves as the project for the Kubernetes course by the Facultad de la Republica. Within this project, you'll find a web application developed with React that performs real-time calculations of the Fibonacci sequence based on user input.
+This repository serves as the project for the Kubernetes course by the Facultad de Ingeniería UdelaR. Within this project, you'll find a web application developed with React that performs real-time calculations of the Fibonacci sequence based on user input.
  
 The application is divided into two primary components: a frontend built as a React application and a backend powered by an Express server. The backend includes a specialized worker module that handles the computation of the Fibonacci sequence and stores the results in a Redis database. Moreover, the Express server utilizes a PostgreSQL database to store the historical input values.
 
@@ -18,14 +18,16 @@ This project employs a 3-layer architecture, consisting of the following layers:
 
 3. **Storage:** The data layer encompasses both the PostgreSQL and Redis databases, where historical input values and computed Fibonacci sequence values are stored, respectively.
 
-<img src="app.jpeg" alt="Alt Text" width="400">
+<div style="text-align:center">
+  <img src="app.jpeg" alt="Alt Text" width="400">
+</div>
 
 ### Components
 1. **Nginx Web Server:** This component routes incoming traffic to various services based on the request type. When accessing the frontend, Nginx directs the request to the React server, and when accessing the backend API, it sends the request to the Express server.
 
 2. **React App (Client):** The frontend of the application, responsible for user interaction.
 
-3. **Express Server (API Layer):** This server acts as the API layer for the React app, handling requests and responses.
+3. **Express Server:** This server acts as the API layer for the React app, handling requests and responses.
 
 4. **PostgreSQL Database:** This database stores historical input values.
 
@@ -35,13 +37,15 @@ This project employs a 3-layer architecture, consisting of the following layers:
 
 ## Kubernetes Architecture 
 
-The Kubernetes architecture relies on pods to encapsulate application containers, promoting scalability and ease of administration. The primary k8 objects utilized are Deployments and Services configured as Cluster IPs.
+The Kubernetes architecture relies on pods to encapsulate the application containers, promoting scalability and ease of administration. The primary k8 objects utilized are Deployments and Services configured as Cluster IPs.
 
 Deployment objects enable the scaling of client, service, and worker pods as needed. Services, on the other hand, are employed to enable internal network connectivity among the pods. In addition, a Persistent Volume Claim (PVC) is employed for database storage.
 
 Furthermore, the Nginx Ingress Controller serves as the primary gateway for external traffic entering the Kubernetes cluster.  It efficiently handles load balancing and routing, simplifying external access to the cluster's services. This controller also incorporates a default backend for health checks.
 
-<img src="k8s.jpeg" alt="Alt Text" width="650">
+<div style="text-align:center">
+  <img src="k8s.jpeg" alt="Alt Text" width="650">
+</div>
 
 ## Project Component Versions
 
@@ -118,4 +122,17 @@ kubectl get pv
 kubectl get pvc
 ```
 
+To access the application in your web browser, use the following URL:
+
+```bash
+http://localhost
+```
+
 ## Helm Chart
+
+```bash
+helm install my-release helm-chart/local-path  --version 1.0.0 # deploy helm charts
+helm list --all-namespaces # listing all the releases
+heml status <release> # getting status of a release
+helm uninstall my-release --keep-history # keep history for rollback
+```

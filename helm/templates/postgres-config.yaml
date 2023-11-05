@@ -1,0 +1,44 @@
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment  
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      component: postgres  
+  template:
+    metadata:
+      labels:
+        component: postgres  
+    spec:
+      containers:
+        - name: postgres  
+          image: postgres:10.1  
+          ports:
+            - containerPort: 5432  
+          volumeMounts:
+            - name: postgres-data  # Mounting a volume named "postgres-data"
+              mountPath: /var/lib/postgresql/data  # Mounting path for PostgreSQL data
+              subPath: postgres  # Subpath within the volume
+      volumes:
+        - name: postgres-data 
+          persistentVolumeClaim:
+            claimName: database-pvc  # Claiming a persistent volume (PVC) named "database-pvc"
+
+---
+
+# Service configuration 
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-clusterip 
+spec:
+  type: ClusterIP  
+  selector:
+    component: postgres  
+  ports:
+    - port: 5432  
+      targetPort: 5432  
+      protocol: TCP  

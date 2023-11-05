@@ -1,0 +1,51 @@
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: enzofali/multi-server:v1
+          ports:
+            - containerPort: 5000
+          env: # Environment variables
+            - name: REDIS_HOST
+              value: redis-clusterip
+            - name: REDIS_PORT
+              value: '6379'
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST
+              value: postgres-clusterip
+            - name: PGDATABASE
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: PGPORT
+              value: '5432'
+
+---
+
+# Service configuration
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-clusterip
+spec:
+  type: ClusterIP
+  selector:
+    component: server
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
