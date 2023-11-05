@@ -59,6 +59,33 @@ The Ingress Nginx Controller is configured based on the documentation available 
 [Ingress Nginx Quick Start Guide](https://kubernetes.github.io/ingress-nginx/deploy/#quick-start)
   - This documentation provides instructions on deploying and configuring the Ingress Nginx Controller within a Kubernetes environment.
 
+## Quick Start 
+
+1. Install the Helm Chart:
+
+```bash 
+$ helm install webapp-release-v1 webapp/ 
+```
+
+2. Install the Ingress Nginx Controller
+
+```bash
+$ helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+```
+or 
+
+```bash
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+```
+
+3. Access the application in your web browser using the following URL:
+
+```bash
+http://localhost
+```
+
 ## Getting Started
 
 ### Build Docker Images
@@ -66,11 +93,11 @@ The Ingress Nginx Controller is configured based on the documentation available 
 Build the Docker images:
 
 ```bash
-`docker build -t <name>/worker:<version> ./worker`
+$ docker build -t <name>/worker:<version> ./worker
 
-`docker build -t <name>/client:<version> ./client`
+$ docker build -t <name>/client:<version> ./client
 
-`docker build -t <name>/server:<version> ./server`
+$ docker build -t <name>/server:<version> ./server
 ```
 
 Replace `<name>` with your Docker image repository name and `<version>` with the desired version or tag for your images.
@@ -80,11 +107,11 @@ Replace `<name>` with your Docker image repository name and `<version>` with the
 Push the Docker images to your repository:
 
 ```bash
-`docker push <name>/client:<version>`
+$ docker push <name>/client:<version>
 
-`docker push <name>/worker:<version>`
+$ docker push <name>/worker:<version>
 
-`docker push <name>/server:<version>`
+$ docker push <name>/server:<version>
 ```
 
 ## Kubernetes Deployment
@@ -94,32 +121,31 @@ To deploy the application on a Kubernetes cluster using `kubectl`:
 Apply the Kubernetes configurations in the "k8" folder to create the necessary resources:
 
 ```bash
-kubectl apply -f k8
+$ kubectl apply -f k8
 ```
 
 Check the status of the deployed pods:
 
-
 ```bash
-kubectl get pods
+$ kubectl get pods
 ```
 
 Check the services to ensure they are up and running:
 
 ```bash
-kubectl get services
+$ kubectl get services
 ```
 
 Verify the deployments:
 
 ```bash
-kubectl get deployments
+$ kubectl get deployments
 ```
 
 Check the Persistent Volume (PV) and Persistent Volume Claim (PVC):
 ```bash
-kubectl get pv
-kubectl get pvc
+$ kubectl get pv
+$ kubectl get pvc
 ```
 
 To access the application in your web browser, use the following URL:
@@ -136,19 +162,93 @@ http://localhost
 
 ## Helm Chart
 
+### Prerequisites
+
+- kubectl version: v1.28.2
+- helm version: v3.13.0 
+
+### Installing the Chart
+
+To install the Chart with the release name `my-release`:
+
 ```bash
-helm install webapp-release-v1 webapp/  
-helm upgrade webapp-release-v1 webapp/ --values webapp/values.yaml
-helm list --all-namespaces # listing all the releases
-
-
-
-heml status <release> # getting status of a release
-helm uninstall my-release --keep-history # keep history for rollback
+$ helm install my-release webapp/ 
 ```
 
-helm upgrade --install ingress-nginx ingress-nginx \
+The comand deploys the web app on the Kubernetes cluster with the default configuration. 
+
+### Installing Ingress Nginx Controller
+
+To deploy the Ingress Nginx Controller using Helm:
+
+```bash
+$ helm upgrade --install ingress-nginx ingress-nginx \
   --repo https://kubernetes.github.io/ingress-nginx \
   --namespace ingress-nginx --create-namespace
+```
 
-- helm install webapp-release-v1 webapp/   
+or if you prefer to use a YAML manifest: 
+
+```bash
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+```
+
+### List and Status of the Release
+
+To list the releases:  
+    
+```bash
+$ helm list --all-namespaces 
+```
+
+To get the status of a release:
+```bash
+$ helm status <release>
+```
+
+### Upgrading the Release
+
+To upgrade the release with a modified configuration, save the new values.yaml file and run the following command:
+
+```bash
+$ helm upgrade my-release webapp/ --values webapp/values.yaml
+```
+
+### Uninstalling the Chart
+
+To uninstall the Chart with the release name `my-release`:
+
+```bash
+$ helm uninstall my-release --keep-history # keep history for rollback purposes
+```
+
+## Parameters
+
+The following table lists the configurable parameters of the Web App chart and their default values.
+
+|                 Parameter                 |                                              Description                                               |                           Default                            |
+|-------------------------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| `Name`                                    | Dynamic Helm Release Naming for Kubernetes Deployments                                                 |                                                              |
+| `namespace`                               | Custom Kubernetes Namespace Configuration for Application Deployment                                   | `default`                                                    |
+| `client.replicaCount`                     | Client Deployment Pods Number Configuration                                                            | `3`                                                          |
+| `client.image.repository`                 | Client Docker Image name                                                                               | `enzofali/multi-client`                                      |
+| `client.image.tag`                        | Client Docker Image version                                                                            | `v1`                                                         |
+| `server.replicaCount`                     | Server Deployment Pods Number Configuration                                                            | `3`                                                          |
+| `server.image.repository`                 | Server Docker Image name                                                                               | `enzofali/multi-server`                                      |
+| `server.image.tag`                        | Server Docker Image version                                                                            | `v1`                                                         |
+| `worker.replicaCount`                     | Worker Deployment Pods Number Configuration                                                            | `5`                                                          |
+| `worker.image.repository`                 | Worker Docker Image name                                                                               | `enzofali/multi-worker`                                      |
+| `worker.image.tag`                        | Worker Docker Image version                                                                            | `v1`                                                         |
+| `postgres.replicaCount`                   | Postgres Deployment Pods Number Configuration                                                          | `1`                                                          |
+| `postgres.image.repository`               | Postgres Docker Image name                                                                             | `postgres`                                                   |
+| `postgres.image.tag`                      | Postgres Docker Image version                                                                          | `10.1`                                                       |
+| `redis.replicaCount`                      | Redis Deployment Pods Number Configuration                                                             | `1`                                                          |
+| `redis.image.repository`                  | Redis Docker Image name                                                                                | `redis`                                                      |
+| `redis.image.tag`                         | Redis Docker Image version                                                                             | `7.2.2`                                                      |
+| `pvc.accessModes`                         | Persistent Volume Claims Storage Access Mode Configuration                                             | `ReadWriteOnce`                                              |
+| `pvc.storageSize`                         | Persistent Volume Claims Storage Size Configuration                                                    | `1Gi`                                                        |
+| `service.type`                            | Service Type Configuration for Internal Networking                                                     | `ClusterIP`                                                  |
+
+
+
+
