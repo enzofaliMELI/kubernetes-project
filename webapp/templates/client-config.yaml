@@ -2,9 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-deployment  # The name of the Deployment
+  name: {{ .Release.Name }}-client-deployment
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 3 # The number of Pods to create
+  replicas: {{ .Values.client.replicaCount }} 
   selector:
     matchLabels:
       component: client  # Selector to match Pods controlled by this Deployment
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: client  # Name of the container
-          image: enzofali/multi-client:v1  # Docker image to use
+          image: {{ .Values.client.image.repository }}:{{ .Values.client.image.tag }} 
           ports:
             - containerPort: 3000  # Port on which the container listens
 
@@ -25,9 +26,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: client-clusterip  # The name of the Service
+  name: {{ .Release.Name }}-client-clusterip  # The name of the Service
+  namespace: {{ .Values.namespace }}
 spec:
-  type: ClusterIP  # Type of the Service (ClusterIP provides an internal cluster-internal IP)
+  type: {{ .Values.service.type }}
   selector:
     component: client  # Selector to determine which Pods the Service should forward traffic to
   ports:

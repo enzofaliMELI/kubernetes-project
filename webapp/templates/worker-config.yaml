@@ -2,9 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker-deployment
+  name: {{ .Release.Name }}-worker-deployment
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 5
+  replicas: {{ .Values.worker.replicaCount }}
   selector:
     matchLabels:
       component: worker
@@ -15,9 +16,9 @@ spec:
     spec:
       containers:
         - name: worker
-          image: enzofali/multi-worker:v1
+          image: {{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}
           env:
             - name: REDIS_HOST
-              value: redis-clusterip 
+              value: {{ .Release.Name }}-redis-clusterip 
             - name: REDIS_PORT
               value: '6379'

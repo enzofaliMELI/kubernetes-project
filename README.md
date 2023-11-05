@@ -128,11 +128,27 @@ To access the application in your web browser, use the following URL:
 http://localhost
 ```
 
+### Troubleshooting
+ - "context deadline exceeded" error when deploying the Ingress Nginx Controller: 
+    - Try redeploying the Ingress Nginx Service using the following command: `kubectl apply -f ingress-service.yaml`
+    - Try redeploying the Ingress Nginx Controller using the following command: `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml`
+    - Try increasing the timeout value in the Ingress Nginx Controller deployment configuration file.
+
 ## Helm Chart
 
 ```bash
-helm install my-release helm-chart/local-path  --version 1.0.0 # deploy helm charts
+helm install webapp-release-v1 webapp/  
+helm upgrade webapp-release-v1 webapp/ --values webapp/values.yaml
 helm list --all-namespaces # listing all the releases
+
+
+
 heml status <release> # getting status of a release
 helm uninstall my-release --keep-history # keep history for rollback
 ```
+
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+
+- helm install webapp-release-v1 webapp/   

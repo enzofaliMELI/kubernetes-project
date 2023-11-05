@@ -2,9 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres-deployment  
+  name: {{ .Release.Name }}-postgres-deployment  
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1  
+  replicas: {{ .Values.postgres.replicaCount }} 
   selector:
     matchLabels:
       component: postgres  
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: postgres  
-          image: postgres:10.1  
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }} 
           ports:
             - containerPort: 5432  
           volumeMounts:
@@ -25,7 +26,7 @@ spec:
       volumes:
         - name: postgres-data 
           persistentVolumeClaim:
-            claimName: database-pvc  # Claiming a persistent volume (PVC) named "database-pvc"
+            claimName: {{ .Release.Name }}-database-pvc 
 
 ---
 
@@ -33,9 +34,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-clusterip 
+  name: {{ .Release.Name }}-postgres-clusterip 
+  namespace: {{ .Values.namespace }}
 spec:
-  type: ClusterIP  
+  type: {{ .Values.service.type }}  
   selector:
     component: postgres  
   ports:

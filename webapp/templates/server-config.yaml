@@ -2,9 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server-deployment
+  name: {{ .Release.Name }}-server-deployment
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 3
+  replicas: {{ .Values.server.replicaCount }}
   selector:
     matchLabels:
       component: server
@@ -15,18 +16,18 @@ spec:
     spec:
       containers:
         - name: server
-          image: enzofali/multi-server:v1
+          image: {{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}
           ports:
             - containerPort: 5000
           env: # Environment variables
             - name: REDIS_HOST
-              value: redis-clusterip
+              value: {{ .Release.Name }}-redis-clusterip
             - name: REDIS_PORT
               value: '6379'
             - name: PGUSER
               value: postgres
             - name: PGHOST
-              value: postgres-clusterip
+              value: {{ .Release.Name }}-postgres-clusterip
             - name: PGDATABASE
               value: postgres
             - name: POSTGRES_PASSWORD
@@ -40,9 +41,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: server-clusterip
+  name: {{ .Release.Name }}-server-clusterip
+  namespace: {{ .Values.namespace }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }} 
   selector:
     component: server
   ports:

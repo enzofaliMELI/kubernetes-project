@@ -2,9 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-deployment
+  name: {{ .Release.Name }}-redis-deployment
+  namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.redis.replicaCount }}
   selector:
     matchLabels:
       component: redis
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: redis:7.2.2
+          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
           ports:
             - containerPort: 6379
 
@@ -25,9 +26,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-clusterip
+  name: {{ .Release.Name }}-redis-clusterip
+  namespace: {{ .Values.namespace }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }} 
   selector:
     component: redis
   ports:

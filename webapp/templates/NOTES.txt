@@ -1,0 +1,11 @@
+Install Ingress Nginx Controller
+
+you can deploy the ingress controller with the following command:
+
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace
+
+if you prefer to use a YAML manifest: 
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml

@@ -1,0 +1,46 @@
+# Namespace
+namespace: default # [dev, stg, prod]
+
+# Client
+client: 
+  replicaCount: 3
+  image:
+    repository: enzofali/multi-client
+    tag: v1
+
+# Server
+server:
+  replicaCount: 3
+  image:
+    repository: enzofali/multi-server
+    tag: v1
+
+# Worker
+worker:
+  replicaCount: 5
+  image:
+    repository: enzofali/multi-worker
+    tag: v1
+
+# Postgres
+postgres:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 10.1
+
+# Redis
+redis:
+  replicaCount: 1
+  image:
+    repository: redis
+    tag: 7.2.2
+
+# PVC
+pvc:
+  accessModes: ReadWriteOnce
+  storageSize: 1Gi
+
+# Internal Services Type
+service:
+  type: ClusterIP

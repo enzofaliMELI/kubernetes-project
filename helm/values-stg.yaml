@@ -1,5 +1,0 @@
-namespace: stg
-
-configmap:
-  data:
-    CUSTOM_HEADER: 'This is on the STG environment!'
