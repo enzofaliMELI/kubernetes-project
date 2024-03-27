@@ -1,0 +1,46 @@
+# Deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-postgres-deployment  
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.postgres.replicaCount }} 
+  selector:
+    matchLabels:
+      component: postgres  
+  template:
+    metadata:
+      labels:
+        component: postgres  
+    spec:
+      containers:
+        - name: postgres  
+          image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }} 
+          ports:
+            - containerPort: 5432  
+          volumeMounts:
+            - name: postgres-data  # Mounting a volume named "postgres-data"
+              mountPath: /var/lib/postgresql/data  # Mounting path for PostgreSQL data
+              subPath: postgres  # Subpath within the volume
+      volumes:
+        - name: postgres-data 
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-database-pvc 
+
+---
+
+# Service configuration 
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres-clusterip 
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.type }}  
+  selector:
+    component: postgres  
+  ports:
+    - port: 5432  
+      targetPort: 5432  
+      protocol: TCP  
